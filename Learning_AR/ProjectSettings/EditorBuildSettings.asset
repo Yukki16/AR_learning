@@ -5,10 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/BlankAR.unity
     guid: 6bdce89659816455b9f906fc62d19910
+  - enabled: 1
+    path: Assets/Scenes/FaceFilter.unity
+    guid: 954521a550a059846a0d4fc2b513d091
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 5e5bc5338a419ea49821c27b41bd0dda,
+      type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: 744b813df90924c169af73489b8325de,
       type: 2}
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 89a6d18d3df8d3e4fa917b0f9a963bc0,
@@ -26,4 +31,6 @@ EditorBuildSettings:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 58f40b12bbc864f3c96c6505a9a1e1e3,
       type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 6bb381a8ba31f114d9724357633b4625,
+      type: 2}
+    xr.sdk.mock-hmd.settings: {fileID: 11400000, guid: e56fa2bce5aac9d4195e97da5dbc7a26,
       type: 2}
