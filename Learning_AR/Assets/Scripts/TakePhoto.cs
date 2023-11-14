@@ -18,10 +18,12 @@ public class TakePhoto : MonoBehaviour
     }
     [SerializeField]  Camera _camera;
     [SerializeField] RenderTexture _texture;
+    [SerializeField] GameObject ui;
 
 
     public void Capture()
     {
+        ui.SetActive(false);
         //_texture = RenderTexture.active;
         //RenderTexture.active = _camera.targetTexture;
         _camera.targetTexture = _texture;
@@ -40,5 +42,7 @@ public class TakePhoto : MonoBehaviour
         fileCounter++;
 
         _camera.targetTexture = null;
+
+        ui.SetActive(true);
     }
 }
