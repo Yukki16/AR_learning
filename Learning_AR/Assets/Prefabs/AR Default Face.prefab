@@ -142,6 +142,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: heavyhelm
       objectReference: {fileID: 0}
+    - target: {fileID: 542916193606334781, guid: edf77cd7ef9fa0d48bba00e6f9e16b6e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919582916441678727, guid: edf77cd7ef9fa0d48bba00e6f9e16b6e,
         type: 3}
       propertyPath: m_RootOrder
@@ -482,6 +487,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4335204587152546137}
     m_Modifications:
+    - target: {fileID: 1844548835158360634, guid: bc8e54b1d62bd2f499826cdfa9d5d708,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: ae3b4b20a806ac8459d78be71d27e7f7, type: 2}
     - target: {fileID: 3720199748111276690, guid: bc8e54b1d62bd2f499826cdfa9d5d708,
         type: 3}
       propertyPath: m_Name
@@ -490,7 +500,7 @@ PrefabInstance:
     - target: {fileID: 3720199748111276690, guid: bc8e54b1d62bd2f499826cdfa9d5d708,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4101404154899709992, guid: bc8e54b1d62bd2f499826cdfa9d5d708,
         type: 3}
