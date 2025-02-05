@@ -1,6 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using Unity.XR.CoreUtils;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.UI.Extensions;
 using UnityEngine.XR.ARFoundation;
 
@@ -11,78 +15,181 @@ public class ChangeFilter : MonoBehaviour
     /// </summary>
     HorizontalScrollSnap hss;
 
-    //the group with all the masks for the app
-    [SerializeField] GameObject faceMaskGroupObject;
-    List<Transform> filters;
+    //the group with all the /    //[SerializeField] GameObject faceMaskGroupObject;
 
     [SerializeField] ARFaceManager faceManager;
 
+    [SerializeField] GameObject filtersGroup;
+
     //A dictionary to make it easier to find the filters to activate
-    Dictionary<string , Transform> faces = new Dictionary<string , Transform>();
+    // Dictionary<string , Transform> faces = new Dictionary<string , Transform>();
 
-    private void Awake()
+
+    [SerializeField] List<string> filterName = new List<string>();
+    [SerializeField] List<GameObject> filtersPrefabs = new List<GameObject>();
+
+    Dictionary<string, GameObject> filters = new Dictionary<string, GameObject>();
+
+    GameObject activeFilter = null;
+
+    void Start()
     {
-        faceMaskGroupObject = faceManager.facePrefab.gameObject;
-        filters = new List<Transform>();
-
-        //Adds all the mesh renderers, not necessary that i now look at it, used to create the dictionary
-        for (int i = 0; i < faceMaskGroupObject.transform.childCount; i++)
+        // Subscribe to face added and updated events
+        //faceManager.facesChanged += OnFacesChanged;
+        //Debug.Log("Subscribed");
+        if (filterName.Count == filtersPrefabs.Count)
         {
-            filters.Add(faceMaskGroupObject.transform.GetChild(i).GetComponent<Transform>());
-        }
-
-        for (int i = 0; i < filters.Count; i++)
-        {
-            faces.Add(filters[i].name, filters[i]);
-        }
-        DeactivateFilters();
-
-        hss = GetComponent<HorizontalScrollSnap>();
-    }
-
-    public void ChangeFilterByPage() 
-    {
-        //finds the new filter that needs to be active, in case of "Default" it deactivates all
-        Transform facePrefabTemp;
-        if(!faces.TryGetValue(hss.CurrentPageObject().name, out facePrefabTemp))
-        {
-            Debug.LogWarning("No filter with this name");
-            DeactivateFilters();
+            for (int i = 0; i < filterName.Count; i++)
+            {
+                filters.Add(filterName[i], filtersPrefabs[i]);
+            }
         }
         else
         {
-            DeactivateFilters();
+            Debug.LogError("The lists filterName and filtersPrefabs must be of equal length. Please check the names/prefabs of the filters");
+        }
 
-            if (facePrefabTemp.name != "Default")
+
+    }
+    private void OnDestroy()
+    {
+    }
+
+
+    /*void ResetFaces()
+    {
+        foreach (var face in faceManager.trackables)
+        {
+            ARFace f;
+            face.TryGetComponent<ARFace>(out f);
+
+            if(f != null)
+                f = null;
+        }
+        Debug.Log("All faces cleared.");
+    }*/
+    public void OnFilterChange()
+    {
+        /*if (activeFilter != null)
+        {
+            Destroy(activeFilter);
+        }
+
+        try
+        {
+            ClearFaceMeshes();
+            activeFilter = Instantiate(filters[hss.CurrentPageObject().name], filtersGroup.transform);
+        }
+        catch
+        {
+            activeFilter = null;
+            Debug.LogWarning("NO FILTER MATCHES HSS PAGE NAME");
+        }*/
+
+        try
+        {
+            //faceManager.enabled = false;
+            //faceManager.enabled = true;
+            TurnOffRenderers();
+            GameObject[] facesWithTag = GameObject.FindGameObjectsWithTag(hss.CurrentPageObject().name);
+            Debug.Log(facesWithTag.Length);
+            ARFaceMeshVisualizer arFace = null;
+
+            foreach (var face in facesWithTag)
             {
-                Transform outValue;
-                faces.TryGetValue(facePrefabTemp.name, out outValue);
+                Renderer tempRend;
+                face.TryGetComponent(out tempRend);
+                if (tempRend != null)
+                {
+                    tempRend.enabled = true;
+                    Debug.Log($"{tempRend.gameObject.name} renderer disabled bool: {tempRend.enabled}");
+                }
 
-                if (outValue != null)
+                face.TryGetComponent(out arFace);
+                if (arFace != null)
                 {
-                    outValue.transform.gameObject.SetActive(true);
+                    arFace.enabled = true;
                 }
-                else
-                {
-                    Debug.LogWarning("Please check spelling in the HSS object, this error is because of the spelling of a kid");
-                }
+
+            }
+            //StartCoroutine(RefreshGroupFilters());
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            TurnOffRenderers();
+        }
+
+    }
+
+    void ClearFaceMeshes()
+    {
+        foreach (var face in faceManager.trackables)
+        {
+            // Get the MeshFilter of the tracked face
+            MeshFilter meshFilter = face.GetComponent<MeshFilter>();
+            Debug.Log(meshFilter);
+            if (meshFilter != null)
+            {
+                // Clear the mesh to make it invisible
+                meshFilter.mesh = null;
+            }
+
+            // Get the ARFaceMeshVisualizer, if used, and disable it
+            /*ARFaceMeshVisualizer meshVisualizer = face.GetComponent<ARFaceMeshVisualizer>();
+            if (meshVisualizer != null)
+            {
+                meshVisualizer.
+            }*/
+
+            Debug.Log($"Cleared mesh for face: {face.trackableId}");
+        }
+    }
+
+    void TurnOffRenderers()
+    {
+        ARFaceMeshVisualizer arFace = null;
+        foreach (Renderer rend in filtersGroup.GetComponentsInChildren<Renderer>())
+        {
+            rend.enabled = false;
+            //rend.gameObject.SetActive(false);
+            //rend.gameObject.SetActive(true);
+            rend.TryGetComponent(out arFace);
+            if (arFace != null)
+            {
+                arFace.enabled = false;
             }
         }
+
+        /*foreach (var face in faceManager.trackables)
+        {
+            //Destroy(face);
+            *//*face.trackingState = UnityEngine.XR.ARSubsystems.TrackingState.None;
+            MeshFilter mesh = face.GetComponent<MeshFilter>();
+            if (mesh != null)
+            {
+                mesh = null;
+                Debug.Log("Mesh removed for " + face.gameObject.name);
+            }*//*
+        }*/
+        //yield return StartCoroutine(RefreshGroupFilters());
     }
 
-    void DeactivateFilters()
+    IEnumerator RefreshGroupFilters()
     {
-        foreach (Transform filter in filters)
-        {
-            filter.transform.gameObject.SetActive(false);
-        }
+        /*filtersGroup.SetActive(false);
+        yield return new WaitForSeconds(0.5f);
+        filtersGroup.SetActive(true);*/
+        faceManager.facePrefab = null;
+        yield return new WaitForSeconds(0.5f);
+        faceManager.facePrefab = filtersGroup;
+        Debug.Log("refreshed");
     }
-    
-    void EnableMeshForChildren(Transform theFilter)
+
+    private void Awake()
     {
-        for (int i = 0; i < theFilter.transform.childCount; i++) 
-        {
-            
-        }
+        hss = GetComponent<HorizontalScrollSnap>();
     }
+
+
 }
